@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free Online Image Editor - Resize, Compress, Convert, Crop, and Remove Background from Images.">
+  <meta name="keywords" content="image editor, image resizer, image compressor, image converter, crop image, background remover">
+  <meta name="author" content="Your Name">
+  <title>Image Editor - Free Online Tool</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-theme {
+      background-color: #1e1e1e;
+      color: #f4f4f4;
+    }
+
+    header {
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    #theme-toggle {
+      background: #fff;
+      color: #007bff;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #theme-toggle:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .toolbox {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .toolbox button {
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin: 0.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toolbox button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbox button i {
+      font-size: 1.2rem;
+    }
+
+    .image-preview {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    #image-output {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      margin-top: 2rem;
+      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Image Editor</h1>
+    <button id="theme-toggle">Switch Theme</button>
+  </header>
+  <main>
+    <section class="toolbox">
+      <input type="file" id="image-input" accept="image/*" style="display: none;">
+      <label for="image-input" class="upload-btn">
+        <button><i class="fas fa-upload"></i> Upload Image</button>
+      </label>
+      <button id="resize-btn"><i class="fas fa-expand"></i> Resize</button>
+      <button id="compress-btn"><i class="fas fa-file-archive"></i> Compress</button>
+      <button id="crop-btn"><i class="fas fa-crop"></i> Crop</button>
+      <button id="remove-bg-btn"><i class="fas fa-eraser"></i> Remove Background</button>
+      <button id="convert-btn"><i class="fas fa-exchange-alt"></i> Convert</button>
+      <button id="download-btn"><i class="fas fa-download"></i> Download</button>
+    </section>
+    <section class="image-preview">
+      <div class="spinner" id="spinner"></div>
+      <img id="image-output" src="" alt="Edited Image">
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2023 Image Editor. All rights reserved.</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+    });
+
+    // Image Input
+    const imageInput = document.getElementById('image-input');
+    const imageOutput = document.getElementById('image-output');
+    const spinner = document.getElementById('spinner');
+    let cropper;
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        spinner.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageOutput.src = event.target.result;
+          if (cropper) {
+            cropper.destroy();
+          }
+          cropper = new Cropper(imageOutput, {
+            aspectRatio: 1,
+            viewMode: 1,
+          });
+          spinner.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Resize Button
+    document.getElementById('resize-btn').addEventListener('click', () => {
+      alert('Resize functionality coming soon!');
+    });
+
+    // Compress Button
+    document.getElementById('compress-btn').addEventListener('click', () => {
+      alert('Compress functionality coming soon!');
+    });
+
+    // Crop Button
+    document.getElementById('crop-btn').addEventListener('click', () => {
+      const croppedImage = cropper.getCroppedCanvas().toDataURL();
+      imageOutput.src = croppedImage;
+    });
+
+    // Remove Background Button
+    document.getElementById('remove-bg-btn').addEventListener('click', () => {
+      alert('Background removal functionality coming soon!');
+    });
+
+    // Convert Button
+    document.getElementById('convert-btn').addEventListener('click', () => {
+      alert('Convert functionality coming soon!');
+    });
+
+    // Download Button
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'edited-image.png';
+      link.href = imageOutput.src;
+      link.click();
+    });
+  </script>
+</body>
+</html>
