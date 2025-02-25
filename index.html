@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Free Online Image Editor - Resize, Compress, Convert, Crop, and Remove Background from Images.">
-  <meta name="keywords" content="image editor, image resizer, image compressor, image converter, crop image, background remover">
+  <meta name="description" content="Free Online Image Compressor - Compress and optimize images for web and mobile. Reduce image size without losing quality.">
+  <meta name="keywords" content="image compressor, compress images, optimize images, reduce image size, image optimization tool">
   <meta name="author" content="Your Name">
-  <title>Image Editor - Free Online Tool</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <title>Image Compressor - Free Online Tool</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
@@ -73,6 +72,17 @@
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       margin-bottom: 2rem;
+    }
+
+    .toolbox label {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .toolbox input[type="range"] {
+      width: 100%;
+      margin-bottom: 1rem;
     }
 
     .toolbox button {
@@ -143,41 +153,87 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* Ad Spaces */
+    .ad-space {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .ad-space iframe {
+      width: 100%;
+      height: auto;
+      border: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .toolbox button {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Image Editor</h1>
+    <h1>Image Compressor</h1>
     <button id="theme-toggle">Switch Theme</button>
   </header>
   <main>
-  <!-- Hero Section -->
-    <section class="hero">
-      <h2>Compress and Optimize Your Images</h2>
-      <p>Reduce image size without losing quality. Perfect for web and mobile use.</p>
-      <a href="compressor.html" class="cta-button">Start Compressing</a>
-    </section>
+    <!-- Ad Space 1 -->
+    <div class="ad-space">
+      <!-- Replace with your Google AdSense code -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-YOUR_AD_CLIENT_ID"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
     <section class="toolbox">
       <input type="file" id="image-input" accept="image/*" style="display: none;">
       <label for="image-input" class="upload-btn">
         <button><i class="fas fa-upload"></i> Upload Image</button>
       </label>
-      <button id="resize-btn"><i class="fas fa-expand"></i> Resize</button>
+      <label for="compression-level">Compression Level: <span id="compression-value">50</span>%</label>
+      <input type="range" id="compression-level" min="1" max="100" value="50">
       <button id="compress-btn"><i class="fas fa-file-archive"></i> Compress</button>
-      <button id="crop-btn"><i class="fas fa-crop"></i> Crop</button>
-      <button id="remove-bg-btn"><i class="fas fa-eraser"></i> Remove Background</button>
-      <button id="convert-btn"><i class="fas fa-exchange-alt"></i> Convert</button>
       <button id="download-btn"><i class="fas fa-download"></i> Download</button>
     </section>
     <section class="image-preview">
       <div class="spinner" id="spinner"></div>
-      <img id="image-output" src="" alt="Edited Image">
+      <img id="image-output" src="" alt="Compressed Image">
     </section>
+
+    <!-- Ad Space 2 -->
+    <div class="ad-space">
+      <!-- Replace with your Google AdSense code -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-YOUR_AD_CLIENT_ID"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
   </main>
   <footer>
-    <p>&copy; 2023 Image Editor. All rights reserved.</p>
+    <p>&copy; 2023 Image Compressor. All rights reserved.</p>
   </footer>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression/dist/browser-image-compression.min.js"></script>
   <script>
     // Theme Toggle
     const themeToggle = document.getElementById('theme-toggle');
@@ -189,58 +245,67 @@
     const imageInput = document.getElementById('image-input');
     const imageOutput = document.getElementById('image-output');
     const spinner = document.getElementById('spinner');
-    let cropper;
+    const compressionLevel = document.getElementById('compression-level');
+    const compressionValue = document.getElementById('compression-value');
 
-    imageInput.addEventListener('change', (e) => {
+    compressionLevel.addEventListener('input', () => {
+      compressionValue.textContent = compressionLevel.value;
+    });
+
+    imageInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (file) {
         spinner.style.display = 'block';
         const reader = new FileReader();
         reader.onload = (event) => {
           imageOutput.src = event.target.result;
-          if (cropper) {
-            cropper.destroy();
-          }
-          cropper = new Cropper(imageOutput, {
-            aspectRatio: 1,
-            viewMode: 1,
-          });
           spinner.style.display = 'none';
         };
         reader.readAsDataURL(file);
+      } else {
+        alert('No file selected. Please upload an image.');
       }
     });
 
-    // Resize Button
-    document.getElementById('resize-btn').addEventListener('click', () => {
-      alert('Resize functionality coming soon!');
-    });
-
     // Compress Button
-    document.getElementById('compress-btn').addEventListener('click', () => {
-      alert('Compress functionality coming soon!');
-    });
+    document.getElementById('compress-btn').addEventListener('click', async () => {
+      const file = imageInput.files[0];
+      if (!file) {
+        alert('Please upload an image first.');
+        return;
+      }
 
-    // Crop Button
-    document.getElementById('crop-btn').addEventListener('click', () => {
-      const croppedImage = cropper.getCroppedCanvas().toDataURL();
-      imageOutput.src = croppedImage;
-    });
+      try {
+        spinner.style.display = 'block';
+        const options = {
+          maxSizeMB: compressionLevel.value / 100, // Set compression level
+          maxWidthOrHeight: 1024, // Maximum width or height
+          useWebWorker: true, // Use web worker for better performance
+        };
+        const compressedFile = await imageCompression(file, options);
 
-    // Remove Background Button
-    document.getElementById('remove-bg-btn').addEventListener('click', () => {
-      alert('Background removal functionality coming soon!');
-    });
-
-    // Convert Button
-    document.getElementById('convert-btn').addEventListener('click', () => {
-      alert('Convert functionality coming soon!');
+        // Display compressed image
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageOutput.src = event.target.result;
+          spinner.style.display = 'none';
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Failed to compress image. Please try again.');
+        spinner.style.display = 'none';
+      }
     });
 
     // Download Button
     document.getElementById('download-btn').addEventListener('click', () => {
+      if (!imageOutput.src) {
+        alert('Please upload and compress an image first.');
+        return;
+      }
       const link = document.createElement('a');
-      link.download = 'edited-image.png';
+      link.download = 'compressed-image.png';
       link.href = imageOutput.src;
       link.click();
     });
