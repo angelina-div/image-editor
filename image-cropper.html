@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free Online Image Cropper - Crop and resize images with ease. Perfect for web and mobile use.">
+  <meta name="keywords" content="image cropper, crop images, resize images, image editing tool, online tools">
+  <meta name="author" content="Your Name">
+  <title>Image Cropper - Free Online Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      background-color: #f4f4f4;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-theme {
+      background-color: #1e1e1e;
+      color: #f4f4f4;
+    }
+
+    header {
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    #theme-toggle {
+      background: #fff;
+      color: #007bff;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #theme-toggle:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .toolbox {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .toolbox button {
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin: 0.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toolbox button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbox button i {
+      font-size: 1.2rem;
+    }
+
+    .image-preview {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    #image-output {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cropped-image-container {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    #cropped-image-output {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #007bff, #00bfff);
+      color: #fff;
+      margin-top: 2rem;
+      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Ad Spaces */
+    .ad-space {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .ad-space iframe {
+      width: 100%;
+      height: auto;
+      border: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .toolbox button {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Image Cropper</h1>
+    <button id="theme-toggle">Switch Theme</button>
+  </header>
+  <main>
+    <!-- Ad Space 1 -->
+    <div class="ad-space">
+      <!-- Replace with your Google AdSense code -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-YOUR_AD_CLIENT_ID"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <section class="toolbox">
+      <input type="file" id="image-input" accept="image/*" style="display: none;">
+      <label for="image-input" class="upload-btn">
+        <button><i class="fas fa-upload"></i> Upload Image</button>
+      </label>
+      <button id="crop-btn"><i class="fas fa-crop"></i> Crop</button>
+      <button id="download-btn"><i class="fas fa-download"></i> Download</button>
+    </section>
+    <section class="image-preview">
+      <div class="spinner" id="spinner"></div>
+      <img id="image-output" src="" alt="Original Image">
+    </section>
+
+    <!-- Cropped Image Section -->
+    <section class="cropped-image-container">
+      <h3>Cropped Image</h3>
+      <img id="cropped-image-output" src="" alt="Cropped Image">
+    </section>
+
+    <!-- Ad Space 2 -->
+    <div class="ad-space">
+      <!-- Replace with your Google AdSense code -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-YOUR_AD_CLIENT_ID"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2023 Image Cropper. All rights reserved.</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+    });
+
+    // Image Input
+    const imageInput = document.getElementById('image-input');
+    const imageOutput = document.getElementById('image-output');
+    const croppedImageOutput = document.getElementById('cropped-image-output');
+    const spinner = document.getElementById('spinner');
+    let cropper;
+
+    // Upload Button
+    document.querySelector('.upload-btn').addEventListener('click', () => {
+      imageInput.click(); // Trigger file input when the button is clicked
+    });
+
+    imageInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        spinner.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageOutput.src = event.target.result;
+          if (cropper) {
+            cropper.destroy();
+          }
+          cropper = new Cropper(imageOutput, {
+            aspectRatio: 1, // Set aspect ratio (1:1 for square)
+            viewMode: 1, // Restrict crop box to the image size
+          });
+          spinner.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('No file selected. Please upload an image.');
+      }
+    });
+
+    // Crop Button
+    document.getElementById('crop-btn').addEventListener('click', () => {
+      if (!imageOutput.src) {
+        alert('Please upload an image first.');
+        return;
+      }
+      const croppedImage = cropper.getCroppedCanvas().toDataURL();
+      croppedImageOutput.src = croppedImage; // Display the cropped image
+    });
+
+    // Download Button
+    document.getElementById('download-btn').addEventListener('click', () => {
+      if (!croppedImageOutput.src) {
+        alert('Please crop an image first.');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'cropped-image.png';
+      link.href = croppedImageOutput.src;
+      link.click();
+    });
+  </script>
+</body>
+</html>
