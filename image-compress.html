@@ -252,6 +252,11 @@
       compressionValue.textContent = compressionLevel.value;
     });
 
+    // Upload Button
+    document.querySelector('.upload-btn').addEventListener('click', () => {
+      imageInput.click(); // Trigger file input when the button is clicked
+    });
+
     imageInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (file) {
